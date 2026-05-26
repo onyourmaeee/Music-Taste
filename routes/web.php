@@ -26,7 +26,7 @@ Route::middleware('auth')->group(function () {
 
     // Songs
     Route::get('/songs', [SongController::class, 'index'])->name('songs.index');
-    Route::get('/songs/genres', [SongController::class, 'getGenres'])->name('songs.genres'); 
+    Route::get('/songs/genres', [SongController::class, 'getGenres'])->name('songs.genres');
     Route::post('/songs', [SongController::class, 'store'])->name('songs.store');
     Route::put('/songs/{song}', [SongController::class, 'update'])->name('songs.update');
     Route::delete('/songs/{song}', [SongController::class, 'destroy'])->name('songs.destroy');
@@ -42,12 +42,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/playlists', [PlaylistController::class, 'store'])->name('playlists.store');
     Route::put('/playlists/{playlist}', [PlaylistController::class, 'update'])->name('playlists.update');
     Route::delete('/playlists/{playlist}', [PlaylistController::class, 'destroy'])->name('playlists.destroy');
-    
-    // [BAGONG DAGDAG] Tradisyunal na Form Submission Routes para sa ating Blade Interface
+
     Route::post('/playlists/{playlist}/add-song-form', [PlaylistController::class, 'addSongForm'])->name('playlists.add-song');
     Route::delete('/playlists/{playlist}/remove-song-form/{song}', [PlaylistController::class, 'removeSongForm'])->name('playlists.remove-song');
 
-    // Iyong mga kasalukuyang AJAX/API Endpoints (Huwag galawin para sa background integrations)
     Route::post('/playlists/{playlist}/songs', [PlaylistController::class, 'addSong'])->name('playlists.songs.add');
     Route::delete('/playlists/{playlist}/songs/{song}', [PlaylistController::class, 'removeSong'])->name('playlists.songs.remove');
     Route::get('/playlists/{playlist}/songs', [PlaylistController::class, 'getSongs'])->name('playlists.songs.get');
@@ -55,4 +53,5 @@ Route::middleware('auth')->group(function () {
     // Settings
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
     Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::post('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.password'); // ← DAGDAG
 });
