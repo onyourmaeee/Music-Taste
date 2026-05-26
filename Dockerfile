@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:8.1-cli
 
 
 RUN apt-get update && apt-get install -y \
@@ -14,18 +14,6 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 
-RUN a2enmod rewrite
-
-
-RUN sed -i 's/Listen 80/Listen 8080/g' /etc/apache2/ports.conf
-RUN sed -i 's/*:80/*:8080/g' /etc/apache2/sites-available/*.conf
-
-
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-
-
 WORKDIR /var/www/html
 COPY . .
 
@@ -33,9 +21,6 @@ COPY . .
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-
 EXPOSE 8080
 
-CMD ["apache2-foreground"]
+CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8080
