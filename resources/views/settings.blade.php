@@ -33,8 +33,8 @@
         ::-webkit-scrollbar-track { background: #0F0F0F; }
         ::-webkit-scrollbar-thumb { background: #FF69B4; border-radius: 2px; }
         .noise-bg::before { content: ''; position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events: none; border-radius: inherit; z-index: 0; }
-        input, select { transition: border-color 0.2s ease; }
-        input:focus, select:focus { border-color: #FF69B4; outline: none; }
+        input, select, textarea { transition: border-color 0.2s ease; }
+        input:focus, select:focus, textarea:focus { border-color: #FF69B4; outline: none; }
     </style>
 </head>
 <body class="min-h-screen flex">
@@ -107,7 +107,9 @@
             </div>
         @endif
 
-        <div class="max-w-2xl mx-auto">
+        <div class="max-w-2xl mx-auto space-y-6">
+
+            {{-- ===== PROFILE CARD ===== --}}
             <div class="noise-bg relative bg-[#1A1A1D] border border-gray-800/70 rounded-3xl p-8">
                 <div class="relative z-10">
                     <h1 class="font-display font-black text-2xl tracking-tight mb-1">Profile Settings</h1>
@@ -119,7 +121,18 @@
                         {{-- Avatar --}}
                         <div class="flex items-center gap-6">
                             <div class="relative">
-                                <div id="avatar-preview" class="w-24 h-24 rounded-full bg-cover bg-center bg-gray-800 border-2 border-docupink/40" style="background-image: url('{{ $user->avatar ? (str_starts_with($user->avatar, 'http') ? $user->avatar : asset('storage/' . $user->avatar)) : 'https://via.placeholder.com/96/1a1a1d/FF69B4?text=' . urlencode(substr($user->name, 0, 1)) }}');"></div>
+                                {{-- FIX: Use $user->avatar directly since controller stores as "avatars/filename.jpg"
+                                         asset('storage/' . $user->avatar) = /storage/avatars/filename.jpg ✓ --}}
+                                <div id="avatar-preview"
+                                     class="w-24 h-24 rounded-full bg-cover bg-center bg-gray-800 border-2 border-docupink/40"
+                                     style="background-image: url('{{
+                                         $user->avatar
+                                             ? (str_starts_with($user->avatar, 'http')
+                                                 ? $user->avatar
+                                                 : asset('storage/' . ltrim($user->avatar, '/')))
+                                             : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=1a1a1d&color=FF69B4&size=96'
+                                     }}');">
+                                </div>
                                 <label for="avatar-input" class="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-docupink text-black flex items-center justify-center cursor-pointer hover:scale-105 transition shadow-lg">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 </label>
@@ -129,6 +142,10 @@
                                 <p class="font-bold text-sm">{{ $user->name }}</p>
                                 <p class="text-xs text-gray-500">{{ $user->email }}</p>
                                 <p class="text-[10px] text-gray-600 mt-1">Click the camera icon to upload a new photo</p>
+                                {{-- Debug helper — remove after confirming it works --}}
+                                @if($user->avatar)
+                                    <p class="text-[10px] text-gray-700 mt-0.5">Stored: {{ $user->avatar }}</p>
+                                @endif
                             </div>
                         </div>
 
@@ -169,11 +186,49 @@
 
                         <div class="flex gap-3 pt-2">
                             <a href="{{ route('dashboard') }}" class="px-5 py-2.5 rounded-xl border border-gray-700 text-sm text-gray-400 hover:text-white transition">Cancel</a>
-                            <button type="submit" class="flex-1 btn-primary text-sm px-5 py-2.5 rounded-xl font-bold text-black" style="background: #FF69B4;">Save Changes</button>
+                            <button type="submit" class="flex-1 text-sm px-5 py-2.5 rounded-xl font-bold text-black transition hover:opacity-90" style="background: #FF69B4;">Save Changes</button>
                         </div>
                     </form>
                 </div>
             </div>
+
+            {{-- ===== PASSWORD CARD ===== --}}
+            <div class="noise-bg relative bg-[#1A1A1D] border border-gray-800/70 rounded-3xl p-8">
+                <div class="relative z-10">
+                    <h2 class="font-display font-black text-xl tracking-tight mb-1">Change Password</h2>
+                    <p class="text-gray-400 text-sm mb-8">Leave blank if you don't want to change it</p>
+
+                    <form action="{{ route('settings.password') }}" method="POST" class="space-y-5">
+                        @csrf
+
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1.5 font-medium">Current Password</label>
+                            <input type="password" name="current_password"
+                                   class="w-full bg-[#0F0F0F] border border-gray-700/60 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-docupink transition"
+                                   placeholder="••••••••">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1.5 font-medium">New Password</label>
+                            <input type="password" name="password"
+                                   class="w-full bg-[#0F0F0F] border border-gray-700/60 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-docupink transition"
+                                   placeholder="Min. 8 characters">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1.5 font-medium">Confirm New Password</label>
+                            <input type="password" name="password_confirmation"
+                                   class="w-full bg-[#0F0F0F] border border-gray-700/60 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-docupink transition"
+                                   placeholder="••••••••">
+                        </div>
+
+                        <div class="flex gap-3 pt-2">
+                            <button type="submit" class="flex-1 text-sm px-5 py-2.5 rounded-xl font-bold text-black transition hover:opacity-90" style="background: #FF69B4;">Update Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </main>
 
