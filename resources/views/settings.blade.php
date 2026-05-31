@@ -74,7 +74,10 @@
             </a>
         </nav>
         <div class="px-4 py-5 border-t border-gray-800/60 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-docupink to-pink-300 flex items-center justify-center text-black font-black text-sm">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
+            <img id="sidebar-avatar"
+                 src="{{ auth()->user()->avatar ? (str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . ltrim(auth()->user()->avatar, '/'))) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=1a1a1d&color=FF69B4&size=96' }}"
+                 class="w-9 h-9 rounded-full object-cover border border-docupink/40"
+                 alt="{{ auth()->user()->name }}">
             <div class="min-w-0">
                 <p class="text-sm font-bold truncate">{{ auth()->user()->name }}</p>
                 <form action="{{ route('logout') }}" method="POST" class="inline">
@@ -109,7 +112,6 @@
 
         <div class="max-w-2xl mx-auto space-y-6">
 
-            {{-- ===== PROFILE CARD ===== --}}
             <div class="noise-bg relative bg-[#1A1A1D] border border-gray-800/70 rounded-3xl p-8">
                 <div class="relative z-10">
                     <h1 class="font-display font-black text-2xl tracking-tight mb-1">Profile Settings</h1>
@@ -118,11 +120,8 @@
                     <form action="{{ route('settings.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                         @csrf
 
-                        {{-- Avatar --}}
                         <div class="flex items-center gap-6">
                             <div class="relative">
-                                {{-- FIX: Use $user->avatar directly since controller stores as "avatars/filename.jpg"
-                                         asset('storage/' . $user->avatar) = /storage/avatars/filename.jpg ✓ --}}
                                 <div id="avatar-preview"
                                      class="w-24 h-24 rounded-full bg-cover bg-center bg-gray-800 border-2 border-docupink/40"
                                      style="background-image: url('{{
@@ -142,30 +141,24 @@
                                 <p class="font-bold text-sm">{{ $user->name }}</p>
                                 <p class="text-xs text-gray-500">{{ $user->email }}</p>
                                 <p class="text-[10px] text-gray-600 mt-1">Click the camera icon to upload a new photo</p>
-                                {{-- Debug helper — remove after confirming it works --}}
-                                @if($user->avatar)
-                                    <p class="text-[10px] text-gray-700 mt-0.5">Stored: {{ $user->avatar }}</p>
                                 @endif
                             </div>
                         </div>
 
                         <hr class="border-gray-800/60">
 
-                        {{-- Name --}}
                         <div>
                             <label class="block text-xs text-gray-400 mb-1.5 font-medium">Full Name</label>
                             <input type="text" name="name" value="{{ old('name', $user->name) }}" required
                                    class="w-full bg-[#0F0F0F] border border-gray-700/60 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-docupink transition">
                         </div>
 
-                        {{-- Email --}}
                         <div>
                             <label class="block text-xs text-gray-400 mb-1.5 font-medium">Email Address</label>
                             <input type="email" name="email" value="{{ old('email', $user->email) }}" required
                                    class="w-full bg-[#0F0F0F] border border-gray-700/60 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-docupink transition">
                         </div>
 
-                        {{-- Gender --}}
                         <div>
                             <label class="block text-xs text-gray-400 mb-1.5 font-medium">Gender</label>
                             <select name="gender"
@@ -177,7 +170,6 @@
                             </select>
                         </div>
 
-                        {{-- Address --}}
                         <div>
                             <label class="block text-xs text-gray-400 mb-1.5 font-medium">Address</label>
                             <textarea name="address" rows="2"
@@ -192,7 +184,6 @@
                 </div>
             </div>
 
-            {{-- ===== PASSWORD CARD ===== --}}
             <div class="noise-bg relative bg-[#1A1A1D] border border-gray-800/70 rounded-3xl p-8">
                 <div class="relative z-10">
                     <h2 class="font-display font-black text-xl tracking-tight mb-1">Change Password</h2>
@@ -243,6 +234,8 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 document.getElementById('avatar-preview').style.backgroundImage = `url('${e.target.result}')`;
+                const sidebarAvatar = document.getElementById('sidebar-avatar');
+                if (sidebarAvatar) sidebarAvatar.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
