@@ -141,7 +141,6 @@
                                 <p class="font-bold text-sm">{{ $user->name }}</p>
                                 <p class="text-xs text-gray-500">{{ $user->email }}</p>
                                 <p class="text-[10px] text-gray-600 mt-1">Click the camera icon to upload a new photo</p>
-                                @endif
                             </div>
                         </div>
 
