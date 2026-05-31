@@ -78,13 +78,16 @@
                  src="{{ auth()->user()->avatar ? (str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . ltrim(auth()->user()->avatar, '/'))) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=1a1a1d&color=FF69B4&size=96' }}"
                  class="w-9 h-9 rounded-full object-cover border border-docupink/40"
                  alt="{{ auth()->user()->name }}">
-            <div class="min-w-0">
+            <div class="flex-1 min-w-0">
                 <p class="text-sm font-bold truncate">{{ auth()->user()->name }}</p>
-                <form action="{{ route('logout') }}" method="POST" class="inline">
-                    @csrf
-                    <button class="text-[10px] text-gray-500 hover:text-red-400 transition">Logout</button>
-                </form>
+                <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
             </div>
+            <form action="{{ route('logout') }}" method="POST" class="m-0">
+                @csrf
+                <button class="text-gray-600 hover:text-docupink transition flex items-center">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                </button>
+            </form>
         </div>
     </aside>
 
