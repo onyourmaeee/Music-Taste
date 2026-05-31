@@ -96,15 +96,11 @@
     </style>
 </head>
 <body class="bg-[#0F0F0F] text-white min-h-screen flex w-full overflow-x-hidden">
- 
-    {{-- YouTube Player iframe (off-screen but fully opaque for Chrome audio) --}}
     <iframe id="yt-player"
             width="200" height="200"
             style="position:fixed;top:-9999px;left:-9999px;width:200px;height:200px;opacity:1;"
             frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
     </iframe>
-
-    {{-- SIDEBAR --}}
     <div id="sidebar-overlay" class="sidebar-overlay fixed inset-0 bg-black/60 z-20 lg:hidden" onclick="toggleSidebar()"></div>
     <aside class="mobile-sidebar w-64 flex-col bg-[#111113] border-r border-gray-800/60 min-h-screen fixed left-0 top-0 z-30 lg:flex lg:!translate-x-0">
         <div class="px-6 py-7 border-b border-gray-800/60 flex items-center gap-3">
@@ -152,30 +148,35 @@
                 Settings
             </a>
         </nav>
+        <div class="px-4 py-5 border-t border-gray-800/60 flex items-center gap-3">
+            <img src="{{ auth()->user()->avatar ? (str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . ltrim(auth()->user()->avatar, '/'))) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name ?? 'U') . '&background=1a1a1d&color=FF69B4&size=96' }}"
+                 class="w-9 h-9 rounded-full object-cover border border-docupink/40 flex-shrink-0"
+                 alt="{{ auth()->user()->name }}">
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold truncate">{{ auth()->user()->name ?? 'Guest' }}</p>
+                <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email ?? '' }}</p>
+            </div>
+            <form action="{{ route('logout') }}" method="POST" class="m-0">
+                @csrf
+                <button class="text-gray-600 hover:text-docupink transition flex items-center">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                </button>
+            </form>
+        </div>
     </aside>
- 
-    {{-- MAIN LAYOUT CONTENT --}}
     <main class="flex-1 lg:ml-64 min-h-screen w-full max-w-full flex flex-col lg:flex-row gap-6 p-6 box-border overflow-x-hidden">
-        
-        {{-- LEFT CONTAINER: Playlist System --}}
         <div class="flex-1 flex flex-col space-y-6 min-w-0">
-            
-            {{-- Mobile hamburger --}}
             <div class="lg:hidden flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white p-1">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
                 <h1 class="font-display font-black text-xl tracking-tight">Playlists</h1>
             </div>
-
-            {{-- Alert Handlers --}}
             @if(session('success'))
                 <div class="bg-green-500/20 border border-green-500 text-green-300 px-4 py-3 rounded-xl text-sm">
                     {{ session('success') }}
                 </div>
             @endif
-
-            {{-- Playlist Banner Card --}}
             <div class="relative noise-bg bg-[#1A1A1D] border border-gray-800/70 rounded-3xl p-6 flex flex-col md:flex-row gap-6 items-center justify-between overflow-hidden">
                 <div class="flex items-center gap-5 z-10 w-full md:w-auto">
                     @if($activePlaylist)
@@ -221,8 +222,6 @@
                 </div>
                 @endif
             </div>
-
-            {{-- Tracks Table Container --}}
             <div class="glow-card bg-[#1A1A1D] border border-gray-800/70 rounded-3xl p-6 flex-1 flex flex-col min-w-0">
                 <h3 class="font-display font-bold text-base mb-4">Tracks Inside Playlist</h3>
                 
@@ -238,7 +237,6 @@
                             </tr>
                         </thead>
                         <tbody id="playlist-tracks-body" class="divide-y divide-gray-800/30">
-                            {{-- Dynamic Javascript Render --}}
                         </tbody>
                     </table>
                     
@@ -248,8 +246,6 @@
                     </div>
                 </div>
             </div>
-
-            {{-- FOOTER MEDIA CONTROLLER --}}
             <div class="bg-[#1A1A1D] border border-gray-800/80 rounded-2xl p-4 flex items-center justify-between shadow-2xl">
                 <div class="flex items-center gap-3 w-1/3 min-w-0">
                     <div id="player-cover" class="w-11 h-11 rounded-xl bg-gray-800 bg-cover bg-center flex-shrink-0" style="background-image: url('https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=100&auto=format&fit=crop');"></div>
@@ -291,11 +287,7 @@
                 </div>
             </div>
         </div>
-
-        {{-- RIGHT SIDEBAR: Playlists Manager & Meta Widgets --}}
         <div class="w-full lg:w-80 flex flex-col gap-6 flex-shrink-0">
-            
-            {{-- Form: Create New Playlist --}}
             <div class="bg-[#1A1A1D] border border-gray-800/70 rounded-3xl p-5">
                 <h4 class="font-display font-bold text-xs tracking-wide text-gray-400 uppercase mb-3">Create New Playlist</h4>
                 <form action="{{ route('playlists.store') }}" method="POST" class="space-y-3">
@@ -307,8 +299,6 @@
                     </button>
                 </form>
             </div>
-
-            {{-- List of Existing Playlists --}}
             <div class="bg-[#1A1A1D] border border-gray-800/70 rounded-3xl p-5 flex-1">
                 <h4 class="font-display font-bold text-xs tracking-wide text-gray-400 uppercase mb-3">Your Playlists Database</h4>
                 <div class="space-y-2 overflow-y-auto max-h-[250px] pr-1">
@@ -325,8 +315,6 @@
             </div>
         </div>
     </main>
-
-    {{-- MODAL: Add Music From Songs Database --}}
     @if($activePlaylist)
     <div id="addMusicModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop p-4">
         <div class="bg-[#1A1A1D] border border-gray-800/80 rounded-3xl w-full max-w-md p-6 fade-in shadow-2xl">
@@ -356,8 +344,6 @@
         </div>
     </div>
     @endif
-
-    {{-- MODAL: Rename Playlist --}}
     @if($activePlaylist)
     <div id="renameModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop p-4">
         <div class="bg-[#1A1A1D] border border-gray-800/80 rounded-3xl w-full max-w-md p-6 fade-in shadow-2xl">
@@ -378,8 +364,6 @@
         </div>
     </div>
     @endif
-
-    {{-- MODAL: Update Cover Photo --}}
     @if($activePlaylist)
     <div id="coverModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop p-4">
         <div class="bg-[#1A1A1D] border border-gray-800/80 rounded-3xl w-full max-w-md p-6 fade-in shadow-2xl">
@@ -408,8 +392,6 @@
         </div>
     </div>
     @endif
-
-    {{-- JAVASCRIPT LOGIC ENGINE --}}
     <script>
         var isPlaying = false;
         const currentPlaylistTracks = @json($activePlaylistSongs ?? []);
