@@ -84,7 +84,6 @@
 </head>
 <body class="text-white min-h-screen flex flex-col">
 
-{{-- YouTube Player iframe (off-screen but fully opaque for Chrome audio) --}}
 <iframe id="yt-player"
         width="200" height="200"
         style="position:fixed;top:-9999px;left:-9999px;width:200px;height:200px;opacity:1;"
@@ -108,23 +107,21 @@
     @endforeach
 
     var userPlaylists = @json($playlists->map(fn($p) => ['id' => $p->id, 'name' => $p->name]));
-
-    // ─── Listen for YouTube iframe events via postMessage ────────
     window.addEventListener('message', function(event) {
         try {
             var data = JSON.parse(event.data);
             if (data.event === 'onStateChange') {
                 var state = data.info;
-                if (state === 0) { // ended
+                if (state === 0) {
                     isPlaying = false;
                     stopProgress();
                     updatePlayBtn(false);
                     playNext();
-                } else if (state === 1) { // playing
+                } else if (state === 1) {
                     isPlaying = true;
                     updatePlayBtn(true);
                     startProgress();
-                } else if (state === 2) { // paused
+                } else if (state === 2) {
                     isPlaying = false;
                     stopProgress();
                     updatePlayBtn(false);
@@ -308,7 +305,6 @@
 
 <div class="flex flex-1">
 
-{{-- SIDEBAR --}}
 <div id="sidebar-overlay" class="sidebar-overlay fixed inset-0 bg-black/60 z-20 lg:hidden" onclick="toggleSidebar()"></div>
 <aside class="mobile-sidebar w-64 flex-col bg-[#111113] border-r border-gray-800/60 min-h-screen fixed left-0 top-0 z-30 lg:flex lg:!translate-x-0">
     <div class="px-6 py-7 border-b border-gray-800/60 flex items-center gap-3">
@@ -357,9 +353,9 @@
         </a>
     </nav>
     <div class="px-4 py-5 border-t border-gray-800/60 flex items-center gap-3">
-        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-docupink to-pink-300 flex items-center justify-center text-black font-black text-sm">
-            {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
-        </div>
+        <img src="{{ auth()->user()->avatar ? (str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . ltrim(auth()->user()->avatar, '/'))) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name ?? 'U') . '&background=1a1a1d&color=FF69B4&size=96' }}"
+             class="w-9 h-9 rounded-full object-cover border border-docupink/40 flex-shrink-0"
+             alt="{{ auth()->user()->name }}">
         <div class="flex-1 min-w-0">
             <p class="text-sm font-semibold truncate">{{ auth()->user()->name ?? 'Guest' }}</p>
             <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email ?? '' }}</p>
@@ -373,10 +369,8 @@
     </div>
 </aside>
 
-    {{-- MAIN --}}
     <main class="flex-1 lg:ml-64 flex flex-col pb-24">
 
-        {{-- Header --}}
         <header class="sticky top-0 z-20 bg-[#0F0F0F]/80 backdrop-blur-md border-b border-gray-800/60 px-6 py-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="lg:hidden text-gray-400 hover:text-white p-1">
@@ -393,10 +387,8 @@
             </button>
         </header>
 
-        {{-- Content --}}
         <div class="flex-1 p-6 space-y-8">
 
-            {{-- Featured / Top Song --}}
             @if($songs->count() > 0)
             @php $featured = $songs->first(); @endphp
             <div class="relative rounded-2xl overflow-hidden h-52"
@@ -428,15 +420,12 @@
             </div>
             @endif
 
-            {{-- Song List --}}
             <div>
-                {{-- Genre Tabs --}}
                 <div id="genre-tabs" class="flex items-center gap-2 mb-5 flex-wrap">
                     <button data-genre="all"
                             class="genre-tab active px-4 py-1.5 rounded-full text-sm font-semibold border border-docupink text-docupink bg-docupink/15 transition">
                         All
                     </button>
-                    {{-- Dynamically injected by JS --}}
                 </div>
 
                 <div class="flex items-center justify-between mb-4">
@@ -444,7 +433,6 @@
                 </div>
 
                 <div class="bg-[#1A1A1D] border border-gray-800/70 rounded-2xl overflow-hidden">
-                    {{-- Table Header --}}
                     <div class="grid grid-cols-12 px-6 py-3 border-b border-gray-800/60 text-gray-600 text-xs uppercase tracking-widest">
                         <div class="col-span-1">#</div>
                         <div class="col-span-4">Name Song</div>
@@ -512,11 +500,9 @@
     </main>
 </div>
 
-{{-- PLAYER BAR --}}
 <div id="player-bar" class="hidden fixed bottom-0 left-0 right-0 z-40 px-6 py-3">
     <div class="flex items-center gap-4 max-w-screen-xl mx-auto">
 
-        {{-- Song Info --}}
         <div class="flex items-center gap-3 w-64 flex-shrink-0">
             <img id="disc-art" src="" class="w-12 h-12 rounded-lg object-cover" alt="art">
             <div class="min-w-0">
@@ -526,7 +512,6 @@
             <img id="player-thumb" src="" class="hidden">
         </div>
 
-        {{-- Controls --}}
         <div class="flex-1 flex flex-col items-center gap-1">
             <div class="flex items-center gap-4">
                 <button onclick="playPrev()" class="text-gray-500 hover:text-white transition">
@@ -549,7 +534,6 @@
             </div>
         </div>
 
-        {{-- Volume --}}
         <div class="flex items-center gap-2 w-32 flex-shrink-0 justify-end">
             <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
             <input type="range" min="0" max="100" value="80" oninput="setVolume(this.value)"
@@ -558,7 +542,6 @@
     </div>
 </div>
 
-{{-- ADD MODAL --}}
 <div id="addModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-[#1A1A1D] border border-gray-800 rounded-2xl w-full max-w-md p-6">
         <div class="flex justify-between items-center mb-6">
@@ -584,7 +567,6 @@
     </div>
 </div>
 
-{{-- EDIT MODAL --}}
 <div id="editModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-[#1A1A1D] border border-gray-800 rounded-2xl w-full max-w-md p-6">
         <div class="flex justify-between items-center mb-6">
@@ -648,8 +630,6 @@
         document.getElementById('editUrl').value = url;
         document.getElementById('editModal').classList.remove('hidden');
     }
-
-    // ─── Genre Tabs ────────────────────────────────────────────────
     const genreTabsContainer = document.getElementById('genre-tabs');
 
     function setActiveTab(genre) {
@@ -670,7 +650,6 @@
         })
         .then(res => res.json())
         .then(genres => {
-            // Remove old dynamic tabs, keep "All"
             genreTabsContainer.querySelectorAll('.genre-tab:not([data-genre="all"])').forEach(t => t.remove());
 
             genres.forEach(genre => {
@@ -707,8 +686,6 @@
     function renderSongs(data) {
         const tbody = document.getElementById('songs-tbody');
         document.getElementById('songs-count-label').textContent = `Global Top ${data.length}`;
-
-        // Sync JS songs array para gumana pa rin ang player
         songs = data.map(s => ({
             id:     s.id,
             title:  s.title,
@@ -776,16 +753,12 @@
             </div>`;
         }).join('');
     }
-
-    // ─── Add to Playlist Bridge ────────────────────────────────────
     function togglePlaylistDropdown(event, songId) {
         event.stopPropagation();
-        // Close all other dropdowns
         document.querySelectorAll('[id^="pl-dropdown-"]').forEach(el => el.classList.add('hidden'));
         const dropdown = document.getElementById('pl-dropdown-' + songId);
         if (dropdown) {
             dropdown.classList.toggle('hidden');
-            // Populate if empty
             if (!dropdown.hasChildNodes() || dropdown.children.length === 0) {
                 dropdown.innerHTML = userPlaylists.map(pl =>
                     `<button type="button" onclick="addToPlaylist(${pl.id}, ${songId}, this)" class="block w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-docupink/10 hover:text-white transition">${pl.name}</button>`
@@ -852,18 +825,12 @@
             btnEl.textContent = userPlaylists.find(p => p.id === playlistId)?.name || 'Playlist';
         });
     }
-
-    // Close dropdowns when clicking outside
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.add-to-playlist-wrapper')) {
             document.querySelectorAll('[id^="pl-dropdown-"]').forEach(el => el.classList.add('hidden'));
         }
     });
-
-    // "All" tab click handler
     document.querySelector('[data-genre="all"]').addEventListener('click', () => filterSongs('all'));
-
-    // Load genre tabs on page load
     document.addEventListener('DOMContentLoaded', loadGenreTabs);
 </script>
 </body>
