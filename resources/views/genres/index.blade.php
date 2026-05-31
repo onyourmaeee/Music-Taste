@@ -186,7 +186,6 @@
 </head>
 <body class="text-white min-h-screen flex">
 
-    {{-- SIDEBAR --}}
     <div id="sidebar-overlay" class="sidebar-overlay fixed inset-0 bg-black/60 z-20 lg:hidden" onclick="toggleSidebar()"></div>
     <aside class="mobile-sidebar w-64 flex-col bg-[#111113] border-r border-gray-800/60 min-h-screen fixed left-0 top-0 z-30 lg:flex lg:!translate-x-0">
         <div class="px-6 py-7 border-b border-gray-800/60 flex items-center gap-3">
@@ -222,9 +221,9 @@
             </a>
         </nav>
         <div class="px-4 py-5 border-t border-gray-800/60 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-docupink to-pink-300 flex items-center justify-center text-black font-black text-sm">
-                {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
-            </div>
+            <img src="{{ auth()->user()->avatar ? (str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . ltrim(auth()->user()->avatar, '/'))) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name ?? 'U') . '&background=1a1a1d&color=FF69B4&size=96' }}"
+                 class="w-9 h-9 rounded-full object-cover border border-docupink/40 flex-shrink-0"
+                 alt="{{ auth()->user()->name }}">
             <div class="flex-1 min-w-0">
                 <p class="text-sm font-semibold truncate">{{ auth()->user()->name ?? 'Guest' }}</p>
                 <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email ?? '' }}</p>
@@ -238,10 +237,8 @@
         </div>
     </aside>
 
-    {{-- MAIN --}}
     <main class="flex-1 lg:ml-64 min-h-screen flex flex-col">
 
-        {{-- Header --}}
         <header class="sticky top-0 z-20 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-gray-800/40 px-6 py-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="lg:hidden text-gray-400 hover:text-white p-1">
@@ -261,16 +258,13 @@
             </nav>
         </header>
 
-        {{-- Hero Section --}}
         @if($featured)
         <div class="flex flex-col lg:flex-row min-h-[420px] border-b border-gray-800/40" id="hero-section">
 
-            {{-- Vinyl Side --}}
             <div class="w-full lg:w-2/5 bg-[#0d0d0d] flex items-center justify-center p-12 relative overflow-hidden">
                 <div class="absolute inset-0 opacity-5"
                      style="background: radial-gradient(circle at 30% 50%, #FF69B4 0%, transparent 60%)"></div>
 
-                {{-- Vinyl --}}
                 <div class="relative" id="vinyl-wrap">
                     <div class="vinyl" id="main-vinyl">
                         <div class="vinyl-label" id="vinyl-label">
@@ -286,7 +280,6 @@
                     <div class="tonearm"></div>
                 </div>
 
-                {{-- Now playing info --}}
                 <div class="absolute bottom-6 left-8 flex items-center gap-3">
                     <div class="waveform" id="waveform">
                         <span></span><span></span><span></span><span></span><span></span>
@@ -295,7 +288,6 @@
                 </div>
             </div>
 
-            {{-- Info Side --}}
             <div class="flex-1 p-10 lg:p-16 flex flex-col justify-center relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-64 h-64 opacity-5 rounded-full"
                      style="background: radial-gradient(circle, #FF69B4, transparent); transform: translate(30%, -30%)"></div>
@@ -316,7 +308,6 @@
         </div>
         @endif
 
-        {{-- Genre Grid --}}
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="font-black text-xl tracking-tight">All Genres <span class="text-gray-600 font-normal text-base">({{ $genres->count() }})</span></h2>
@@ -328,14 +319,12 @@
                 <div class="genre-card group relative rounded-2xl overflow-hidden bg-[#111113] border border-gray-800/60 p-5 {{ $loop->first ? 'active' : '' }}"
                      onclick="selectGenre({{ $genre->id }}, '{{ addslashes($genre->name) }}', '{{ addslashes($genre->description ?? '') }}', '{{ $genre->image ? asset('storage/' . $genre->image) : '' }}')">
 
-                    {{-- Background image --}}
                     @if($genre->image)
                     <div class="absolute inset-0 opacity-10 group-hover:opacity-20 transition"
                          style="background: url('{{ asset('storage/' . $genre->image) }}') center/cover"></div>
                     @endif
 
                     <div class="relative z-10">
-                        {{-- Mini vinyl --}}
                         <div class="w-14 h-14 rounded-full mb-4 flex items-center justify-center overflow-hidden flex-shrink-0"
                              style="background: radial-gradient(circle at center, #1a1a1a 0%, #1a1a1a 25%, #111 25%, #0a0a0a 40%, #1a1a1a 40%, #111 60%, #0a0a0a 60%, #1a1a1a 80%, #111 100%)">
                             @if($genre->image)
@@ -379,7 +368,6 @@
         </div>
     </main>
 
-    {{-- ADD MODAL --}}
     <div id="addModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-[#111113] border border-gray-800 rounded-2xl w-full max-w-md p-6">
             <div class="flex justify-between items-center mb-6">
@@ -404,7 +392,6 @@
         </div>
     </div>
 
-    {{-- EDIT MODAL --}}
     <div id="editModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-[#111113] border border-gray-800 rounded-2xl w-full max-w-md p-6">
             <div class="flex justify-between items-center mb-6">
