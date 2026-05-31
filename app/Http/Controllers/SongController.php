@@ -22,9 +22,11 @@ class SongController extends Controller
 
         $playlists = Playlist::where('user_id', auth()->id())->get(['id', 'title']);
         $featured = Song::where('user_id', auth()->id())->latest()->first();
-        return view('songs.index', compact('songs', 'playlists', 'featured'));
+        $genres = Song::where('user_id', auth()->id())->whereNotNull('genre')->where('genre', '!=', '')->distinct()->orderBy('genre')->pluck('genre');
+        return view('songs.index', compact('songs', 'playlists', 'featured', 'genres'));
     }
 
+    // ← BAGO: para sa genre tabs
     public function getGenres()
     {
         $genres = Song::where('user_id', auth()->id())
