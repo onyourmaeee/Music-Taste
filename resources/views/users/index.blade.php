@@ -99,7 +99,6 @@
 </head>
 <body class="bg-[#0F0F0F] text-white min-h-screen flex w-full overflow-x-hidden">
  
-    {{-- SIDEBAR --}}
     <div id="sidebar-overlay" class="sidebar-overlay fixed inset-0 bg-black/60 z-20 lg:hidden" onclick="toggleSidebar()"></div>
     <aside class="mobile-sidebar w-64 flex-col bg-[#111113] border-r border-gray-800/60 min-h-screen fixed left-0 top-0 z-30 lg:flex lg:!translate-x-0">
         <div class="px-6 py-7 border-b border-gray-800/60 flex items-center gap-3">
@@ -149,9 +148,9 @@
         </nav>
         
         <div class="px-4 py-5 border-t border-gray-800/60 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-docupink to-pink-300 flex items-center justify-center text-black font-black text-sm">
-                {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
-            </div>
+            <img src="{{ auth()->user()->avatar ? (str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . ltrim(auth()->user()->avatar, '/'))) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name ?? 'U') . '&background=1a1a1d&color=FF69B4&size=96' }}"
+                 class="w-9 h-9 rounded-full object-cover border border-docupink/40 flex-shrink-0"
+                 alt="{{ auth()->user()->name }}">
             <div class="flex-1 min-w-0">
                 <p class="text-sm font-semibold truncate">{{ auth()->user()->name ?? 'Guest' }}</p>
                 <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email ?? 'guest@mail.com' }}</p>
@@ -165,10 +164,8 @@
         </div>
     </aside>
  
-    {{-- ===== MAIN CONTENT ===== --}}
     <main class="flex-1 lg:ml-64 min-h-screen w-full max-w-full flex flex-col overflow-x-hidden">
  
-        {{-- Top bar --}}
         <header class="sticky top-0 z-20 bg-[#0F0F0F]/80 backdrop-blur-md border-b border-gray-800/60 px-6 py-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="lg:hidden text-gray-400 hover:text-white p-1">
@@ -187,7 +184,6 @@
  
         <div class="flex-1 p-6 space-y-6 w-full max-w-full box-border">
  
-            {{-- Flash Messages --}}
             @if(session('success'))
             <div class="fade-in flex items-center gap-3 bg-green-500/10 border border-green-500/30 text-green-400 px-4 py-3 rounded-xl text-sm">
                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
@@ -195,7 +191,6 @@
             </div>
             @endif
  
-            {{-- Stats + Add Button Row --}}
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
                     <div class="noise-bg relative bg-[#1A1A1D] border border-gray-800/70 rounded-2xl px-5 py-3 overflow-hidden">
@@ -217,7 +212,6 @@
                 </button>
             </div>
  
-            {{-- Table --}}
             <div class="glow-card bg-[#1A1A1D] border border-gray-800/70 rounded-2xl overflow-hidden w-full">
                 <div class="px-6 py-4 border-b border-gray-800/60 flex items-center justify-between">
                     <h3 class="font-display font-bold text-base">All Users</h3>
@@ -253,13 +247,11 @@
                                 <td class="px-6 py-4 text-gray-500 text-xs">{{ $user->created_at->format('M d, Y') }}</td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center justify-end gap-2">
-                                        {{-- Edit --}}
                                         <button
                                             onclick="openEditModal({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ addslashes($user->username ?? '') }}', '{{ addslashes($user->email) }}')"
                                             class="p-1.5 text-gray-500 hover:text-docupink hover:bg-docupink/10 rounded-lg transition">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         </button>
-                                        {{-- Delete --}}
                                         <button
                                             onclick="openDeleteModal({{ $user->id }}, '{{ addslashes($user->name) }}')"
                                             class="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition">
@@ -289,7 +281,6 @@
         </footer>
     </main>
  
-    {{-- ===== ADD USER MODAL ===== --}}
     <div id="addModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop p-4">
         <div class="bg-[#1A1A1D] border border-gray-800/70 rounded-2xl w-full max-w-md p-6 fade-in">
             <div class="flex items-center justify-between mb-6">
@@ -339,7 +330,6 @@
         </div>
     </div>
  
-    {{-- ===== EDIT USER MODAL ===== --}}
     <div id="editModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop p-4">
         <div class="bg-[#1A1A1D] border border-gray-800/70 rounded-2xl w-full max-w-md p-6 fade-in">
             <div class="flex items-center justify-between mb-6">
@@ -380,7 +370,6 @@
         </div>
     </div>
  
-    {{-- ===== DELETE CONFIRM MODAL ===== --}}
     <div id="deleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop p-4">
         <div class="bg-[#1A1A1D] border border-gray-800/70 rounded-2xl w-full max-w-sm p-6 fade-in text-center">
             <div class="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-4">
