@@ -49,7 +49,6 @@
         <div class="w-full md:w-1/2 p-10 flex flex-col justify-center bg-[#161618]">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-2xl font-bold text-white">Login</h2>
-                {{-- NAAYOS: dating route('dashboard.post'), ngayon route('register') na --}}
                 <a href="{{ route('register') }}" class="text-[10px] bg-docupink text-black px-3 py-1 rounded-full font-bold uppercase hover:bg-white transition">Register</a>
             </div>
 
@@ -75,13 +74,6 @@
                         class="glow-input w-full px-5 py-3 bg-[#252529] border border-gray-700 rounded-xl text-white placeholder-gray-500">
                 </div>
 
-                <div class="flex items-center justify-between py-1">
-                    <div class="flex items-center space-x-2">
-                        <input type="checkbox" name="remember" class="w-4 h-4 accent-docupink">
-                        <label class="text-[10px] text-gray-500 italic">Remember me</label>
-                    </div>
-                </div>
-
                 <button type="submit" 
                         class="w-full bg-docupink hover:shadow-[0_0_20px_rgba(255,105,180,0.4)] text-black font-black py-4 rounded-full transition-all active:scale-95 uppercase tracking-widest">
                     LOGIN
@@ -90,15 +82,14 @@
         </div>
     </div>
 
-    {{-- Error Toast --}}
-    @if($errors->any())
+    @if(session('toast_error'))
     <script>
         Swal.fire({
             toast: true,
             position: 'top-end',
             icon: 'error',
             iconColor: '#ef4444',
-            title: '{{ $errors->first() }}',
+            title: '{{ session("toast_error") }}',
             showConfirmButton: false,
             timer: 4000,
             timerProgressBar: true,
@@ -108,7 +99,6 @@
     </script>
     @endif
 
-    {{-- Success Toast --}}
     @if(session('success'))
     <script>
         Swal.fire({

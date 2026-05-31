@@ -22,16 +22,15 @@ class AuthController extends Controller
         ]);
 
         $credentials = $request->only('email', 'password');
-        $remember    = $request->boolean('remember');
 
-        if (Auth::attempt($credentials, $remember)) {
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->route('dashboard');
         }
 
         return back()
             ->withInput($request->only('email'))
-            ->withErrors(['email' => 'Mali ang email o password.']);
+            ->with('toast_error', 'Wala ka sa database ko beh, mag register ka!');
     }
 
     public function showRegister()
