@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 
 class SettingsController extends Controller
 {
@@ -38,5 +39,23 @@ class SettingsController extends Controller
         $user->update($data);
 
         return redirect()->route('settings')->with('success', 'Profile updated successfully!');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'current_password' => 'required',
+            'password'         => 'required|min:8|confirmed',
+        ]);
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'Mali ang kasalukuyang password.']);
+        }
+
+        $user->update(['password' => Hash::make($request->password)]);
+
+        return redirect()->route('settings')->with('success', 'Password updated successfully!');
     }
 }
