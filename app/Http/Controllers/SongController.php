@@ -13,7 +13,6 @@ class SongController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Kung AJAX request (fetch), ibalik JSON pati playlists
         if ($request->expectsJson()) {
             return response()->json([
                 'songs' => $songs,
@@ -21,12 +20,11 @@ class SongController extends Controller
             ]);
         }
 
-        // Normal page load, ibalik view
         $playlists = Playlist::where('user_id', auth()->id())->get(['id', 'title']);
-        return view('songs.index', compact('songs', 'playlists'));
+        $featured = Song::where('user_id', auth()->id())->latest()->first();
+        return view('songs.index', compact('songs', 'playlists', 'featured'));
     }
 
-    // ← BAGO: para sa genre tabs
     public function getGenres()
     {
         $genres = Song::where('user_id', auth()->id())
