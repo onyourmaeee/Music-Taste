@@ -51,7 +51,7 @@ class SettingsController extends Controller
         ]);
 
         if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Mali ang kasalukuyang password.']);
+            return back()->withErrors(['current_password' => 'Current password is incorrect.']);
         }
 
         $user->update(['password' => Hash::make($request->password)]);

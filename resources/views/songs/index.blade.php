@@ -353,9 +353,15 @@
         </a>
     </nav>
     <div class="px-4 py-5 border-t border-gray-800/60 flex items-center gap-3">
-        <img src="{{ auth()->user()->avatar ? (str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . ltrim(auth()->user()->avatar, '/'))) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name ?? 'U') . '&background=1a1a1d&color=FF69B4&size=96' }}"
-             class="w-9 h-9 rounded-full object-cover border border-docupink/40 flex-shrink-0"
-             alt="{{ auth()->user()->name }}">
+        @if(auth()->user()->avatar)
+            <img src="{{ str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . ltrim(auth()->user()->avatar, '/')) }}"
+                 class="w-9 h-9 rounded-full object-cover border border-docupink/40 flex-shrink-0"
+                 alt="{{ auth()->user()->name }}">
+        @else
+            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-docupink to-pink-300 flex items-center justify-center text-black font-black text-sm border border-docupink/40 flex-shrink-0">
+                {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+            </div>
+        @endif
         <div class="flex-1 min-w-0">
             <p class="text-sm font-semibold truncate">{{ auth()->user()->name ?? 'Guest' }}</p>
             <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email ?? '' }}</p>
