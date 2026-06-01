@@ -215,7 +215,6 @@
                             <div class="w-10 h-10 rounded-xl bg-docupink/10 border border-docupink/20 flex items-center justify-center">
                                 <svg class="w-5 h-5 text-docupink" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             </div>
-                            <span class="text-xs text-green-400 bg-green-400/10 px-2 py-0.5 rounded-full font-medium">+12%</span>
                         </div>
                         <p class="text-3xl font-display font-black count-animate">{{ $totalUsers ?? '248' }}</p>
                         <p class="text-sm text-gray-400 mt-1 font-medium">Total Users</p>
@@ -229,7 +228,6 @@
                             <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
                                 <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
                             </div>
-                            <span class="text-xs text-green-400 bg-green-400/10 px-2 py-0.5 rounded-full font-medium">+34%</span>
                         </div>
                         <p class="text-3xl font-display font-black count-animate">{{ $totalSongs ?? '1,042' }}</p>
                         <p class="text-sm text-gray-400 mt-1 font-medium">Total Songs</p>
@@ -243,7 +241,6 @@
                             <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
                                 <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
                             </div>
-                            <span class="text-xs text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full font-medium">Stable</span>
                         </div>
                         <p class="text-3xl font-display font-black count-animate">{{ $totalGenres ?? '18' }}</p>
                         <p class="text-sm text-gray-400 mt-1 font-medium">Genres</p>
@@ -257,7 +254,6 @@
                             <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
                                 <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10M4 18h6"/></svg>
                             </div>
-                            <span class="text-xs text-green-400 bg-green-400/10 px-2 py-0.5 rounded-full font-medium">+8%</span>
                         </div>
                         <p class="text-3xl font-display font-black count-animate">{{ $totalPlaylists ?? '389' }}</p>
                         <p class="text-sm text-gray-400 mt-1 font-medium">Playlists</p>
