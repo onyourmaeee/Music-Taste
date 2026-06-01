@@ -74,10 +74,17 @@
             </a>
         </nav>
         <div class="px-4 py-5 border-t border-gray-800/60 flex items-center gap-3">
-            <img id="sidebar-avatar"
-                 src="{{ auth()->user()->avatar ? (str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . ltrim(auth()->user()->avatar, '/'))) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=1a1a1d&color=FF69B4&size=96' }}"
-                 class="w-9 h-9 rounded-full object-cover border border-docupink/40"
-                 alt="{{ auth()->user()->name }}">
+            @if(auth()->user()->avatar)
+                <img id="sidebar-avatar"
+                     src="{{ str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . ltrim(auth()->user()->avatar, '/')) }}"
+                     class="w-9 h-9 rounded-full object-cover border border-docupink/40"
+                     alt="{{ auth()->user()->name }}">
+            @else
+                <div id="sidebar-avatar"
+                     class="w-9 h-9 rounded-full bg-gradient-to-br from-docupink to-pink-300 flex items-center justify-center text-black font-black text-sm border border-docupink/40 flex-shrink-0">
+                    {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+                </div>
+            @endif
             <div class="flex-1 min-w-0">
                 <p class="text-sm font-bold truncate">{{ auth()->user()->name }}</p>
                 <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
@@ -126,14 +133,14 @@
                         <div class="flex items-center gap-6">
                             <div class="relative">
                                 <div id="avatar-preview"
-                                     class="w-24 h-24 rounded-full bg-cover bg-center bg-gray-800 border-2 border-docupink/40"
-                                     style="background-image: url('{{
-                                         $user->avatar
-                                             ? (str_starts_with($user->avatar, 'http')
-                                                 ? $user->avatar
-                                                 : asset('storage/' . ltrim($user->avatar, '/')))
-                                             : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=1a1a1d&color=FF69B4&size=96'
-                                     }}');">
+                                     class="w-24 h-24 rounded-full bg-cover bg-center bg-gray-800 border-2 border-docupink/40
+                                         @if(!$user->avatar) flex items-center justify-center bg-gradient-to-br from-docupink to-pink-300 @endif"
+                                     @if($user->avatar)
+                                     style="background-image: url('{{ str_starts_with($user->avatar, 'http') ? $user->avatar : asset('storage/' . ltrim($user->avatar, '/')) }}');"
+                                     @endif>
+                                    @if(!$user->avatar)
+                                        <span class="text-black font-black text-3xl">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                                    @endif
                                 </div>
                                 <label for="avatar-input" class="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-docupink text-black flex items-center justify-center cursor-pointer hover:scale-105 transition shadow-lg">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -235,9 +242,14 @@
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById('avatar-preview').style.backgroundImage = `url('${e.target.result}')`;
+                const preview = document.getElementById('avatar-preview');
+                preview.className = 'w-24 h-24 rounded-full bg-cover bg-center bg-gray-800 border-2 border-docupink/40';
+                preview.style.backgroundImage = `url('${e.target.result}')`;
+                preview.innerHTML = '';
                 const sidebarAvatar = document.getElementById('sidebar-avatar');
-                if (sidebarAvatar) sidebarAvatar.src = e.target.result;
+                if (sidebarAvatar) {
+                    sidebarAvatar.outerHTML = `<img id="sidebar-avatar" src="${e.target.result}" class="w-9 h-9 rounded-full object-cover border border-docupink/40" alt="{{ auth()->user()->name }}">`;
+                }
             };
             reader.readAsDataURL(file);
         }

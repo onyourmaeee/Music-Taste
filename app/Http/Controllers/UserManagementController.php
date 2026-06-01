@@ -23,12 +23,20 @@ class UserManagementController extends Controller
             'password' => 'required|min:8|confirmed',
         ]);
 
-        User::create([
+        $user = User::create([
             'name'     => $request->name,
             'username' => $request->username,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'User added successfully!',
+                'user'    => $user->only(['id', 'name', 'username', 'email', 'created_at'])
+            ]);
+        }
 
         return back()->with('success', 'User added successfully!');
     }

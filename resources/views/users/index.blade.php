@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Users — Music Taste</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
@@ -148,9 +150,15 @@
         </nav>
         
         <div class="px-4 py-5 border-t border-gray-800/60 flex items-center gap-3">
-            <img src="{{ auth()->user()->avatar ? (str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . ltrim(auth()->user()->avatar, '/'))) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name ?? 'U') . '&background=1a1a1d&color=FF69B4&size=96' }}"
-                 class="w-9 h-9 rounded-full object-cover border border-docupink/40 flex-shrink-0"
-                 alt="{{ auth()->user()->name }}">
+            @if(auth()->user()->avatar)
+                <img src="{{ str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . ltrim(auth()->user()->avatar, '/')) }}"
+                     class="w-9 h-9 rounded-full object-cover border border-docupink/40 flex-shrink-0"
+                     alt="{{ auth()->user()->name }}">
+            @else
+                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-docupink to-pink-300 flex items-center justify-center text-black font-black text-sm border border-docupink/40 flex-shrink-0">
+                    {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+                </div>
+            @endif
             <div class="flex-1 min-w-0">
                 <p class="text-sm font-semibold truncate">{{ auth()->user()->name ?? 'Guest' }}</p>
                 <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email ?? 'guest@mail.com' }}</p>
@@ -185,10 +193,15 @@
         <div class="flex-1 p-6 space-y-6 w-full max-w-full box-border">
  
             @if(session('success'))
-            <div class="fade-in flex items-center gap-3 bg-green-500/10 border border-green-500/30 text-green-400 px-4 py-3 rounded-xl text-sm">
-                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                {{ session('success') }}
-            </div>
+            <script>
+                Swal.fire({ toast: true, position: 'top-end', icon: 'success', iconColor: '#FF69B4', title: '{{ session("success") }}', showConfirmButton: false, timer: 3500, timerProgressBar: true, background: '#1A1A1D', color: '#FFFFFF' });
+            </script>
+            @endif
+
+            @if($errors->any())
+            <script>
+                Swal.fire({ toast: true, position: 'top-end', icon: 'error', iconColor: '#ef4444', title: '{{ $errors->first() }}', showConfirmButton: false, timer: 4000, timerProgressBar: true, background: '#1A1A1D', color: '#FFFFFF' });
+            </script>
             @endif
  
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -290,7 +303,7 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
-            <form action="{{ route('users.store') }}" method="POST" class="space-y-4">
+            <form id="addUserForm" action="{{ route('users.store') }}" method="POST" class="space-y-4">
                 @csrf
                 <div>
                     <label class="block text-xs text-gray-400 mb-1.5 font-medium">Full Name</label>
@@ -417,6 +430,35 @@
         ['addModal','editModal','deleteModal'].forEach(id => {
             document.getElementById(id).addEventListener('click', function(e) {
                 if (e.target === this) this.classList.add('hidden');
+            });
+        });
+
+        document.getElementById('addUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                body: formData
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    Swal.fire({ toast: true, position: 'top-end', icon: 'success', iconColor: '#FF69B4', title: data.message, showConfirmButton: false, timer: 3000, timerProgressBar: true, background: '#1A1A1D', color: '#FFFFFF' });
+                    document.getElementById('addModal').classList.add('hidden');
+                    form.reset();
+                    setTimeout(() => location.reload(), 1200);
+                } else if (response.status === 422) {
+                    const firstError = Object.values(data.errors)[0][0];
+                    Swal.fire({ toast: true, position: 'top-end', icon: 'error', iconColor: '#ef4444', title: firstError, showConfirmButton: false, timer: 4000, timerProgressBar: true, background: '#1A1A1D', color: '#FFFFFF' });
+                } else {
+                    Swal.fire({ toast: true, position: 'top-end', icon: 'error', iconColor: '#ef4444', title: 'Something went wrong.', showConfirmButton: false, timer: 4000, timerProgressBar: true, background: '#1A1A1D', color: '#FFFFFF' });
+                }
+            })
+            .catch(() => {
+                Swal.fire({ toast: true, position: 'top-end', icon: 'error', iconColor: '#ef4444', title: 'Network error. Please try again.', showConfirmButton: false, timer: 4000, timerProgressBar: true, background: '#1A1A1D', color: '#FFFFFF' });
             });
         });
     </script>
